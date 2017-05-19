@@ -1,0 +1,14 @@
+# For parsing the news sites.
+beautifulsoup4==4.6.0
+
+# For generating RSS.
+feedgenerator==1.9
+
+# For downloading articles from Wikipedia.
+requests==2.14.2
+
+# For serving the resulting feed.
+Flask==0.12.1
+
+# For deploying.
+gunicorn==19.7.1
