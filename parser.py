@@ -59,8 +59,13 @@ def _get_news(name, page_url):
 
     # Iterate over each article.
     for article in soup.find_all('article'):
-        # Get the author element, this is used in a few places below.
+        # Get the author element, and pull out the name (and maybe a link).
         author = article.find_all(class_='article-item__contributor')[0]
+        author_name = author.contents[0].strip().lstrip('by').strip()
+        if author.a:
+            author_link = author.a['href']
+        else:
+            author_link = None
         
         # Get the date element and parse it to a datetime.
         date = article.find_all(class_='article-item__date')[0]
@@ -73,8 +78,8 @@ def _get_news(name, page_url):
         feed.add_item(title=str(article.h1.string),
                       link=BASE_URL + article['data-url'],
                       description=str(preview),
-                      author_name=author.contents[0].split('\n')[2].strip(),
-                      author_link=author.a['href'],
+                      author_name=author_name,
+                      author_link=author_link,
                       pubdate=datetime.strptime(date['data-date'], "%Y-%m-%dT%H:%M:%S%z"))
 
     return feed.writeString('utf-8')
