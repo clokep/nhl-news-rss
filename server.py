@@ -1,5 +1,7 @@
 from flask import abort, Flask
 
+from jinja2 import Template
+
 from parser import nhl_news, team_news, VALID_TEAMS
 
 application = Flask(__name__)
@@ -7,7 +9,21 @@ application = Flask(__name__)
 
 @application.route("/")
 def serve_about():
-    abort(404)
+    template = Template(
+'''<html>
+<body>
+<h2><a href="/nhl/">NHL Headlines</a></h2>
+
+<ul>
+{% for short, name in teams %}
+<li><a href="/{{ short }}/">{{ name }}</a></li>
+{% endfor %}
+</ul>
+
+</body>
+</html>''')
+
+    return template.render(teams=VALID_TEAMS.items())
 
 
 @application.route('/nhl/')
