@@ -7,19 +7,55 @@ from bs4 import BeautifulSoup
 import requests
 
 BASE_URL = 'https://www.nhl.com'
-PAGE_URL = BASE_URL + '/islanders/news/'
+
+# See https://www.nhl.com/info/teams
+VALID_TEAMS = {
+    # Metropolitan division.
+    'hurricanes': 'Carolina Hurricanes',
+    'bluejackets': 'Columbus Blue Jackets',
+    'devils': 'New Jersey Devils',
+    'islanders': 'New York Islanders',
+    'rangers': 'New York Rangers',
+    'flyers': 'Philadelphia Flyers',
+    'penguins': 'Pittsburgh Penguins',
+    'capitals': 'Washington Capitals',
+    # Atlantic division.
+    'bruins': 'Boston Bruins',
+    'sabres': 'Buffalo Sabres',
+    'redwings': 'Detroit Red Wings',
+    'panthers': 'Florida Panthers',
+    'canadiens': 'Montréal Canadiens',
+    'senators': 'Ottawa Senators',
+    'lightning': 'Tampa Bay Lightning',
+    'mapleleafs': 'Toronto Maple Leafs',
+    # Central division.
+    'blackhawks': 'Chicago Blackhawks',
+    'avalanche': 'Colorado Avalanche',
+    'stars': 'Dallas Stars',
+    'wild': 'Minnesota Wild',
+    'predators': 'Nashville Predators',
+    'blues': 'St. Louis Blues',
+    'jets': 'Winnipeg Jets',
+    # Pacific division.
+    'ducks': 'Anaheim Ducks',
+    'coyotes': 'Arizona Coyotes',
+    'flames': 'Calgary Flames',
+    'oilers': 'Edmonton Oilers',
+    'kings': 'Las Angeles Kings',
+    'sharks': 'San Jose Sharks',
+    'canucks': 'Vancouver Canucks',
+    'goldenknights': 'Vegas Golden Knights',
+}
 
 
-def main():
+def _get_news(name, page_url):
     # Get the HTML page.
-    response = requests.get(PAGE_URL)
+    response = requests.get(page_url)
 
     # Process the HTML using BeautifulSoup!
     soup = BeautifulSoup(response.content, 'html.parser')
 
-    feed = feedgenerator.Rss201rev2Feed('Islanders News',
-                                        PAGE_URL,
-                                        'Islanders News')
+    feed = feedgenerator.Rss201rev2Feed(name, page_url, name)
 
     # Iterate over each article.
     for article in soup.find_all('article'):
@@ -31,6 +67,8 @@ def main():
 
         # The content is split into two pieces that must be re-assembled.
         preview = article.find_all('div', class_='article-item__preview')[0]
+        # Note that the full body isn't available, it could be grabbed from the
+        # data-url though!
 
         feed.add_item(title=str(article.h1.string),
                       link=BASE_URL + article['data-url'],
@@ -42,5 +80,14 @@ def main():
     return feed.writeString('utf-8')
 
 
+def nhl_news():
+    return _get_news('NHL Headlines', '{}/news/'.format(BASE_URL))
+
+
+def team_news(team):
+    return _get_news('{} News'.format(VALID_TEAMS[team]),
+                     '{}/{}/news/'.format(BASE_URL, team))
+
+
 if __name__ == '__main__':
-    main()
+    team_news('islanders')
