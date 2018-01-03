@@ -1,6 +1,6 @@
 ## NHL News to RSS
 
-**Deprecation notice:** This is no longer being developed. This was previously deployed to Heroku, but is now deployed at https://www.to-rss.xyz/nhl/
+**Deprecation notice:** This is no longer being developed. This was previously deployed to Heroku, but is now deployed at https://www.to-rss.xyz/nhl/ The update source code is available at https://gitlab.com/clokep/to-rss/
 
 To my knowledge, [NHL.com](https://www.nhl.com/) does not provide an
 RSS feed for their [news feed](https://www.nhl.com/news/). This is a simple
